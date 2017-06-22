@@ -12,8 +12,8 @@ console.log("port : 2000 open");
 
 var SOCKET_LIST = {};
 
-var MAP_WIDTH = 5;
-var MAP_HEIGHT = 5;
+var MAP_WIDTH = 800;
+var MAP_HEIGHT = 600;
 var GRAVITY = 1;
 var PLAYER_RADIUS = 40;
 var PLAYER_SPEED = 10;

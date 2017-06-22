@@ -15,6 +15,10 @@
 
     var socket = io();
 
+    var img = new Object();
+    img.sniper = new Image();
+    img.sniper.src = "./client/image/player.png";
+
     var player = new Array();
 
     socket.on('newPosition', function(data) {
@@ -34,7 +38,7 @@
         context.clearRect(0, 0, 800, 600);
 
         for ( var i = 0; i < player.length; i++ ){
-            context.fillRect( player[i].x - 5, player[i].y - 5, 10, 10);
+            player[i].print( img, context );
         }
         
         //for (var i = 0; i < data.bullet.length; i++)
