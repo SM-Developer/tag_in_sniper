@@ -1,17 +1,44 @@
-<canvas id="ctx" width="800" height="600"></canvas>
+
+<canvas id="canvas" width="800" height="600"></canvas>
+<style type="text/css">
+#canvas{
+    background:#1D256D;
+}
+</style>
+
+<script type = "text/javascript" src = "./client/sniper.js"></script>
+<script type = "text/javascript" src = "./client/player.js"></script>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
-    var ctx = document.getElementById("ctx").getContext("2d");
+    var context = document.getElementById("canvas").getContext("2d");
 
     var socket = io();
 
+    var player = new Array();
+
     socket.on('newPosition', function(data) {
-        ctx.clearRect(0, 0, 800, 600);
-        for (var i = 0; i < data.player.length; i++)
-            ctx.fillText(0, data.player[i].x, data.player[i].y);
-        for (var i = 0; i < data.bullet.length; i++)
-            ctx.fillRect(data.bullet[i].x - 5, data.bullet[i].y - 5, 10, 10);
+        // init player
+        for( var i = 0; i < data.player.length; i++ ){
+            if( player[i] == null ){
+                player[i] = Player( data.player[i].x, data.player[i].y, data.player[i].state );
+            }
+            else{
+                player[i].x = data.player[i].x;
+                player[i].y = data.player[i].y;
+                player[i].state = data.player[i].state;
+            }
+        }
+
+        // print canvas
+        context.clearRect(0, 0, 800, 600);
+
+        for ( var i = 0; i < player.length; i++ ){
+            context.fillRect( player[i].x - 5, player[i].y - 5, 10, 10);
+        }
+        
+        //for (var i = 0; i < data.bullet.length; i++)
+        //    context.fillRect(data.bullet[i].x - 5, data.bullet[i].y - 5, 10, 10);
     });
 
     document.onkeydown = function(event) {
@@ -23,8 +50,6 @@
             socket.emit('keyPress', {inputId:'left', isPress: true, state: 'walk'});
         if(event.keyCode === 87)
             socket.emit('keyPress', {inputId:'up', isPress: true, state: 'walk'});
-
-
     }
     document.onkeyup = function(event) {
         if(event.keyCode === 68)
@@ -39,7 +64,6 @@
             var angle = 0; //Math.atan2(y,x) / Math.PI * 180;
             socket.emit('keyPress', {inputId:'shoot', angle: angle});
         }
-
     }
 
 </script>
