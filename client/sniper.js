@@ -35,7 +35,12 @@ var Sniper = function(){
             x -= 32;
         }
 
-        context.drawImage( img.sniper, m * 32, 0 * 48, w, h, x, y, w, h );
+        if( self.state != 'snipe' ){
+            context.drawImage( img.sniper, m * 32, 0 * 48, w, h, x, y, w, h );
+        }
+        else{
+            context.drawImage( img.sniper, 0 * 32, 5 * 48, w, h, x, y, w, h );
+        }
 
         /* 캔버스 복구 */
         context.restore();

@@ -178,6 +178,12 @@ Player.onConnect = function(socket) {
         player.state = 'idle';
       }
     }
+    else if (data.inputId === 'cancel') {
+      if( player.state == 'snipe' ){
+        player.pressUp = player.pressDown = player.pressLeft = player.pressRight = false;
+        player.state = 'idle';
+      }
+    }
   });
 }
 
