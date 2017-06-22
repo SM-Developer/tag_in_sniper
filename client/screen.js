@@ -10,34 +10,34 @@ var Screen = function( player, map ){
 
     self.move = function( player ){
     	/* 스크린이 따라갈 목표 지정 */
-		//if( player.isSnipe ){
-		//	scr.dx = player.sx;
-		//	scr.dy = player.sy;
-		//}
-		//else{
-			scr.dx = player.x;
-			scr.dy = player.y;
-		//}
+		if( player.state == 'snipe' ){
+			self.dx = player.sniping.x;
+			self.dy = player.sniping.y;
+		}
+		else{
+			self.dx = player.x;
+			self.dy = player.y;
+		}
 		
 		/* 남은 거리에 비례해서 따라간다 */
-		scr.x += (scr.dx - scr.x - 360) / 10;
-		scr.y += (scr.dy - scr.y - 240) / 10;
+		self.x += (self.dx - self.x - 360) / 10;
+		self.y += (self.dy - self.y - 240) / 10;
 		
 		/* 거의 비슷하게 따라왔으면 그냥 설정 */
-		if( Math.abs( scr.x + 360 - scr.dx ) + Math.abs( scr.y + 240 - scr.dy ) <= 1 ){
-			scr.x = scr.dx - 360;
-			scr.y = scr.dy - 240;
+		if( Math.abs( self.x + 360 - self.dx ) + Math.abs( self.y + 240 - self.dy ) <= 1 ){
+			self.x = self.dx - 360;
+			self.y = self.dy - 240;
 		}
 		
 		/* 테두리 */
-		if( scr.x < 0 ) scr.x = 0;
-		if( scr.y < 0 ) scr.y = 0;
-		if( scr.x > 30*scr.width*24 - 720 ) scr.x = 30*scr.width*24 - 720;
-		if( scr.y > 30*scr.height*16 - 480 ) scr.y = 30*scr.height*16 - 480;
+		if( self.x < 0 ) self.x = 0;
+		if( self.y < 0 ) self.y = 0;
+		if( self.x > 30*self.width*24 - 720 ) self.x = 30*self.width*24 - 720;
+		if( self.y > 30*self.height*16 - 480 ) self.y = 30*self.height*16 - 480;
 		
 		/* 소숫점 없애기 */
-		scr.x = Math.round( scr.x );
-		scr.y = Math.round( scr.y );
+		self.x = Math.round( self.x );
+		self.y = Math.round( self.y );
     }
 
     return self;

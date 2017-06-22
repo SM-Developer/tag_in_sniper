@@ -24,6 +24,10 @@ var Sniper = function(){
         var w = 32, h = 48;
         var m = Math.floor( self.motion );
 
+        if( self.state == 'jump' ){
+            m = 6;
+        }
+
         /* 왼쪽 방향이면 캔버스 반전 */
         if( self.dir == 0 ){
             context.scale( -1, 1 );

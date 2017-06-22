@@ -99,7 +99,10 @@ var Player = function(id) {
 
   var superUpdate = self.update;
   self.update = function() {
-    self.setSpeed();
+    if( self.state != 'snipe' ){
+      self.setSpeed();
+    }
+    else self.deltaX = 0;
 
     if( self.pressJump && self.state != 'jump' ){
       self.vy = -12;
@@ -162,14 +165,18 @@ Player.onConnect = function(socket) {
     else if (data.inputId === 'down') {
       player.pressDown = data.isPress;
     }
+
     else if (data.inputId === 'jump') {
       player.pressJump = data.isPress;
     }
-
-
     else if (data.inputId === 'shoot') {
-      player.state = 'idle';
-      player.angle = data.angle;
+      if( player.state != 'snipe' ){
+        player.state = 'snipe';
+      }
+      else{
+        player.pressUp = player.pressDown = player.pressLeft = player.pressRight = false;
+        player.state = 'idle';
+      }
     }
   });
 }
