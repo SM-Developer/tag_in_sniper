@@ -37,7 +37,7 @@ var Sniper = function(){
 
         if( self.state != 'snipe' ){
             context.drawImage( img.sniper, m * 32, 0 * 48, w, h, x, y, w, h );
-        }
+        } //else if ( self.state == 'die' )
         else{
             context.drawImage( img.sniper, 0 * 32, 5 * 48, w, h, x, y, w, h );
         }

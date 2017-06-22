@@ -9,6 +9,7 @@
 <script type = "text/javascript" src = "./client/sniper.js"></script>
 <script type = "text/javascript" src = "./client/player.js"></script>
 <script type = "text/javascript" src = "./client/bullet.js"></script>
+<script type = "text/javascript" src = "./client/npc.js"></script>
 <script type = "text/javascript" src = "./client/map.js"></script>
 <script type = "text/javascript" src = "./client/background.js"></script>
 <script type = "text/javascript" src = "./client/screen.js"></script>
@@ -42,6 +43,7 @@
     var map;
 
     Player.list = {};
+    NPC.list = {};
     var socketId = 0;
 
     socket.on('newPosition', function(data) {
@@ -94,6 +96,26 @@
             var bullet = data.bullet[i];
             drawBullet( bullet.x, bullet.y, bullet.angle,
                 scr, img, context );
+        }
+
+        for( var i = 0; i < data.npc.length; i++ ){
+            var npc = data.npc[i];
+            if (NPC.list[i] == null) {
+                var tmpNPC = 
+                    NPC( 
+                        data.npc[i].x,
+                        data.npc[i].y,
+                        data.npc[i].dir,
+                        data.npc[i].state
+                    );
+                NPC.list[i] = tmpNPC;
+            } else {
+                NPC.list[i].x = data.npc[i].x;
+                NPC.list[i].y = data.npc[i].y;
+                NPC.list[i].dir = data.npc[i].dir;
+                NPC.list[i].state = data.npc[i].state;
+            }
+            NPC.list[i].print( scr, img, context );
         }
 
         

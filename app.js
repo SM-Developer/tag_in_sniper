@@ -34,6 +34,7 @@ var Sniper = function() {
 
   self.update = function() {
     self.gravity();
+    if (self.state == 'die') return;
     self.move();
   }
   self.gravity = function() {
@@ -85,7 +86,8 @@ var Sniper = function() {
     if (Math.sqrt(
       Math.pow(self.x - bullet.x, 2) +
       Math.pow(self.y - bullet.y, 2)) < PLAYER_RADIUS / 2) {
-        return true;
+      self.state = 'die';
+      return true;
     }
     return false;
   }
@@ -222,6 +224,101 @@ Player.update = function() {
 
 }
 
+
+var NPC = function(id) {
+  var self = Sniper();
+  self.id = id;
+  self.timer = Math.random()*100 + 10;
+  self.action = Math.floor( Math.random()*3 ) + 1;
+
+  var superUpdate = self.update;
+  self.update = function() {
+
+    if (self.state != 'die') {
+
+      self.ai();
+
+      if( self.state != 'snipe' ){
+        self.setSpeed();
+      }
+      else self.deltaX = 0;
+
+      if( self.pressJump && self.state != 'jump' ){
+        self.vy = -12;
+      }
+    }
+    superUpdate();
+  }
+
+  self.ai = function(){
+    self.timer--;
+    if( self.timer <= 0 ){
+      self.pressLeft = self.pressRight = false;
+      self.timer = Math.random()*100 + 10;
+      self.action = Math.floor( Math.random()*3 ) + 1;
+    }
+
+    // 가만히 있기
+    if( self.action == 1 ){
+    }
+    // 왼쪽으로 걷기
+    else if( self.action == 2 ){
+      self.pressLeft = true;
+    }
+    // 오른쪽으로 걷기
+    else if( self.action == 3 ){
+      self.pressRight = true;
+    }
+  }
+
+  self.setSpeed = function() {
+    if( self.state != 'jump' ){
+      self.state = 'walk';
+    }
+
+    if( self.pressRight ){
+      self.dir = 1;
+      self.deltaX = PLAYER_SPEED;
+    }
+    else if( self.pressLeft ){
+      self.dir = 0;
+      self.deltaX = -PLAYER_SPEED;
+    }
+    else{
+      self.deltaX = 0;
+      if( self.state != 'jump' ){
+        self.state = 'idle';
+      }
+    }
+  }
+
+
+  NPC.list[self.id] = self;
+  return self;
+}
+NPC.update = function() {
+  var pack = [];
+  for (var i in NPC.list) {
+    var npc = NPC.list[i];
+    npc.update();
+
+    pack.push({
+      x: npc.x,
+      y: npc.y,
+      dir: npc.dir,
+      state: npc.state
+    });
+  }
+  return pack;
+}
+NPC.list = {};
+function spawnNPC(num) {
+  for (var i = 0; i < num; i++) {
+    var tmpNPC = NPC(i);
+  }
+}
+spawnNPC(200);
+
 var Bullet = function(angle) {
   var self = {
       id: Math.random(),
@@ -249,11 +346,22 @@ var Bullet = function(angle) {
 
     for (var i in Player.list) {
       var p = Player.list[i];
+      if (p.state == 'die') continue;
       if (p.isShot(self)) {
         // 플레이어가맞음
         self.toRemove = true;
       }
     }
+
+    for (var i in NPC.list) {
+      var npc = NPC.list[i];
+      if (npc.state == 'die') continue;
+      if (npc.isShot(self)) {
+        // 엔피씨가 맞음
+        self.toRemove = true;
+      }
+    }
+
   }
 
   Bullet.list[self.id] = self;
@@ -307,7 +415,8 @@ io.sockets.on('connection', function(socket) {
 setInterval(function() {
   var pack = {
     player: Player.update(),
-    bullet: Bullet.update()
+    bullet: Bullet.update(),
+    npc: NPC.update()
   }
 
   for (var i in SOCKET_LIST) {
