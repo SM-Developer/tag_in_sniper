@@ -18,3 +18,5 @@
 ## 클라이언트 : lojpark [github](https://github.com/lojpark)
 
 ## 서버 : clucle [github](https://github.com/clucle)
+
+프로토타입 제작 기간 : (기획 포함) 15시간
