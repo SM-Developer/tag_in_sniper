@@ -13,12 +13,15 @@
 <script type = "text/javascript" src = "./client/map.js"></script>
 <script type = "text/javascript" src = "./client/background.js"></script>
 <script type = "text/javascript" src = "./client/screen.js"></script>
+<script type = "text/javascript" src = "./client/sound.js"></script>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
     var context = document.getElementById("canvas").getContext("2d");
 
     var socket = io();
+
+    playSndBackground();
 
     var img = new Object();
 
