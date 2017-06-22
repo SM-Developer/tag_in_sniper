@@ -1,36 +1,23 @@
-var Bullet = function( x, y, angle ) {
-	self.x = x;
-	self.y = y;
-	self.angle = angle;
+function drawBullet( x, y, angle, scr, img, context ){
+    var x = x - scr.x;
+    var y = y - scr.y;
+    var w = 30, h = 5;
 
-
-    self.print = function( scr, img, context ){
-        /* 캔버스 저장 */
-        context.save();
-
-        var x = self.x - 16 - scr.x;
-        var y = self.y - 16 - scr.y;
-        var w = 32, h = 32;
-
-        context.fillRect( x, y, w, h );
-        //context.drawImage( img.sniper, m * 32, 0 * 48, w, h, x, y, w, h );
-
-        /* 캔버스 복구 */
-        context.restore();
-    }
-
-}
-
-function drawBullet(x, y, angle, scr, img, context) {
+    /* 캔버스 저장 */
     context.save();
 
-    var x = x - 16 - scr.x;
-    var y = y - 16 - scr.y;
-    var w = 32, h = 32;
+    /* 캔버스 회전 */
+    rotateContext( x, y, angle, context );
 
-    context.fillRect( x, y, w, h );
-    //context.drawImage( img.sniper, m * 32, 0 * 48, w, h, x, y, w, h );
+    /* 이미지 출력 */
+    context.drawImage( img.bullet, 0, 0, w, h, x - w/2, y - h/2, w, h );
 
     /* 캔버스 복구 */
     context.restore();
 }
+
+function rotateContext( x, y, angle, context ){
+    context.translate( x, y );
+    context.rotate( angle * Math.PI/180 );
+    context.translate( x * -1, y * -1 );
+};

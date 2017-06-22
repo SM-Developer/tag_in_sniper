@@ -74,7 +74,7 @@ var Sniper = function() {
   self.isShot = function(bullet) {
     if (Math.sqrt(
       Math.pow(self.x - bullet.x, 2) +
-      Math.pow(self.y - bullet.y, 2)) < PLAYER_RADIUS) {
+      Math.pow(self.y - bullet.y, 2)) < PLAYER_RADIUS / 2) {
         return true;
     }
     return false;
@@ -217,6 +217,7 @@ var Bullet = function(angle) {
       id: Math.random(),
       spdX: Math.cos(angle/180*Math.PI) * 20,
       spdY: Math.sin(angle/180*Math.PI) * 20,
+      angle: angle,
       timer: 0,
       toRemove: false,
   }
@@ -255,7 +256,8 @@ Bullet.update = function() {
     else {
       pack.push({
         x: bullet.x,
-        y: bullet.y
+        y: bullet.y,
+        angle: bullet.angle
       });
     }
   }
