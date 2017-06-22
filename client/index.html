@@ -8,6 +8,8 @@
 
 <script type = "text/javascript" src = "./client/sniper.js"></script>
 <script type = "text/javascript" src = "./client/player.js"></script>
+<script type = "text/javascript" src = "./client/map.js"></script>
+<script type = "text/javascript" src = "./client/screen.js"></script>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
@@ -15,26 +17,46 @@
 
     var socket = io();
 
+    var img = new Object();
+    img.tile = new Image();
+    img.tile.src = "./client/image/tile.png";
+    img.sniper = new Image();
+    img.sniper.src = "./client/image/player.png";
+
+    var scr;
+
+    var map = new Array();
+    var dbmap = new Array();
+    initMap( dbmap );
+    makeMap( map, dbmap );
+
     var player = new Array();
 
     socket.on('newPosition', function(data) {
         // init player
         for( var i = 0; i < data.player.length; i++ ){
-            if( player[i] == null ){
-                player[i] = Player( data.player[i].x, data.player[i].y, data.player[i].state );
+            if( player[ i ] == null ){
+                player[ i ] = Player( data.player[ i ].x, data.player[ i ].y, data.player[ i ].state );
+                if( i == 0 ){
+                    scr = Screen( player[ i ], map );
+                }
             }
             else{
-                player[i].x = data.player[i].x;
-                player[i].y = data.player[i].y;
-                player[i].state = data.player[i].state;
+                player[ i ].x = data.player[ i ].x;
+                player[ i ].y = data.player[ i ].y;
+                player[ i ].state = data.player[ i ].state;
+                if( i == 0 ){
+                    scr.move( player[ i ] );
+                }
             }
         }
 
         // print canvas
         context.clearRect(0, 0, 800, 600);
 
+        printMap( map, scr, img, context );
         for ( var i = 0; i < player.length; i++ ){
-            context.fillRect( player[i].x - 5, player[i].y - 5, 10, 10);
+            player[ i ].print( scr, img, context );
         }
         
         //for (var i = 0; i < data.bullet.length; i++)
@@ -42,23 +64,23 @@
     });
 
     document.onkeydown = function(event) {
-        if(event.keyCode === 68)
+        if(event.keyCode === 39)
             socket.emit('keyPress', {inputId:'right', isPress: true, state: 'walk'});
-        if(event.keyCode === 83)
+        if(event.keyCode === 40)
             socket.emit('keyPress', {inputId:'down', isPress: true, state: 'walk'});
-        if(event.keyCode === 65)
+        if(event.keyCode === 37)
             socket.emit('keyPress', {inputId:'left', isPress: true, state: 'walk'});
-        if(event.keyCode === 87)
+        if(event.keyCode === 38)
             socket.emit('keyPress', {inputId:'up', isPress: true, state: 'walk'});
     }
     document.onkeyup = function(event) {
-        if(event.keyCode === 68)
+        if(event.keyCode === 39)
             socket.emit('keyPress', {inputId:'right', isPress: false, state: 'idle'});
-        if(event.keyCode === 83)
+        if(event.keyCode === 40)
             socket.emit('keyPress', {inputId:'down', isPress: false, state: 'idle'});
-        if(event.keyCode === 65)
+        if(event.keyCode === 37)
             socket.emit('keyPress', {inputId:'left', isPress: false, state: 'idle'});
-        if(event.keyCode === 87)
+        if(event.keyCode === 38)
             socket.emit('keyPress', {inputId:'up', isPress: false, state: 'idle'});
         if(event.keyCode === 90) {
             var angle = 0; //Math.atan2(y,x) / Math.PI * 180;
