@@ -255,7 +255,7 @@ var NPC = function(id) {
 
     self.timer--;
     if( self.timer <= 0 ){
-      self.state = 'idle';
+      if( self.state == 'snipe' ) self.state = 'idle';
       self.timer = Math.random()*100 + 10;
       self.action = Math.floor( Math.random()*4 ) + 1;
     }
@@ -363,7 +363,10 @@ var Bullet = function(angle) {
     var tmpX = Math.floor( (self.x+30) / 30 );
     var tmpY = Math.floor( (self.y+30) / 30 );
     /* 벽에 닿을 때 */
-    if( tmpX < 0 || tmpX > map[0].width * 24 || tmpY < 0 || tmpY > map[0].height * 16 || map[ tmpY ][ tmpX ] == 1 ){
+    if( tmpX < 0 || tmpX > map[0].width * 24 || tmpY < 0 || tmpY > map[0].height * 16 ){
+      self.toRemove = true;
+    }
+    else if( map[ tmpY ][ tmpX ] == 1 ){
       self.toRemove = true;
     }
 
@@ -372,6 +375,11 @@ var Bullet = function(angle) {
       if (p.state == 'die') continue;
       if (p.isShot(self)) {
         // 플레이어가맞음
+        Player.list[i].state = 'die';
+        for (var i in SOCKET_LIST) {
+          var tmpSocket = SOCKET_LIST[i];
+          tmpSocket.emit('endGame', p.id);
+        }
         self.toRemove = true;
       }
     }

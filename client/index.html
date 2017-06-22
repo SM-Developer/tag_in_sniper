@@ -23,6 +23,9 @@
 
     playSndBackground();
 
+    var isGameEnd = false;
+    var isWin = false;
+
     var img = new Object();
 
     img.moon = new Image();
@@ -50,7 +53,7 @@
     var socketId = 0;
 
     socket.on('newPosition', function(data) {
-
+        
         // update player
         for( var i = 0; i < data.player.length; i++ ){
             if (Player.list[data.player[i].id] == null) {
@@ -121,9 +124,8 @@
             NPC.list[i].update();
             NPC.list[i].print( scr, img, context );
         }
-
-        
     });
+
 
     socket.on('initGame', function(id, player, tmpMap) {
         // init player
@@ -146,8 +148,23 @@
         delete Player.list[data];
     });
 
+    socket.on('endGame', function(id) {
+        isGameEnd = true;
+        Player.list[id].state = 'die';
+        if (socketId == id) {
+            isWin = false;
+        } else {
+            isWin = true;
+        }
+    });
+
+
+
+
     document.onkeydown = function(event) {
-        if(Player.list[socketId].state != 'snipe') {
+        console.log(Player.list[socketId].state);
+        if (Player.list[socketId].state == 'die') return;
+        if (Player.list[socketId].state != 'snipe') {
             if(event.keyCode === 39){
                 socket.emit('keyPress', {inputId:'right', isPress: true});
                 key.right = true;
