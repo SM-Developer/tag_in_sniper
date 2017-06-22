@@ -110,6 +110,7 @@ var Player = function(id) {
 
     if(self.pressAttack) {
       self.shootBullet(self.angle);
+      self.pressAttack = false;
     }
 
     superUpdate();
@@ -178,6 +179,9 @@ Player.onConnect = function(socket) {
         player.state = 'idle';
       }
     }
+    else if (data.inputId === 'attack') {
+      player.pressAttack = data.isPress;
+    }
   });
 }
 
@@ -204,18 +208,21 @@ Player.update = function() {
 }
 
 var Bullet = function(angle) {
-  var self;
-  // x, y
-  self.id = Math.random();
-  self.spdX = Math.cos(angle/180*Math.PI) * 10;
-  self.spdY = Math.sin(angle/180*Math.PI) * 10;
-
-  self.timer = 0;
-  self.toRemove = false;
+  var self = {
+      id: Math.random(),
+      spdX: Math.cos(angle/180*Math.PI) * 10,
+      spdY: Math.sin(angle/180*Math.PI) * 10,
+      timer: 0,
+      toRemove: false,
+  }
 
   self.update = function() {
-    if (self.timer++ > 100)
+    if (self.timer++ > 100) {
       self.toRemove = true;
+    }
+
+    self.x += self.spdX;
+    self.y += self.spdY;
 
     for (var i in Player.list) {
       var p = Player.list[i];

@@ -8,6 +8,7 @@
 
 <script type = "text/javascript" src = "./client/sniper.js"></script>
 <script type = "text/javascript" src = "./client/player.js"></script>
+<script type = "text/javascript" src = "./client/bullet.js"></script>
 <script type = "text/javascript" src = "./client/map.js"></script>
 <script type = "text/javascript" src = "./client/screen.js"></script>
 
@@ -78,6 +79,14 @@
         if( Player.list[socketId].state == 'snipe' ){
             Player.list[socketId].printSniping();
         }
+
+
+        for( var i = 0; i < data.bullet.length; i++ ){
+            var bullet = data.bullet[i];
+            drawBullet( bullet.x, bullet.y, bullet.angle,
+                scr, img, context );
+        }
+
         
     });
 
@@ -106,6 +115,7 @@
         if(Player.list[socketId].state != 'snipe') {
             if(event.keyCode === 39){
                 socket.emit('keyPress', {inputId:'right', isPress: true});
+                socket.emit('keyPress', {inputId:'attack', isPress: true});
                 key.right = true;
             }
             if(event.keyCode === 40){
