@@ -240,11 +240,18 @@ var Bullet = function(angle) {
     self.x += self.spdX;
     self.y += self.spdY;
 
+    var tmpX = Math.floor( (self.x+30) / 30 );
+    var tmpY = Math.floor( (self.y+30) / 30 );
+    /* 벽에 닿을 때 */
+    if( tmpX < 0 || tmpX > map[0].width * 24 || tmpY < 0 || tmpY > map[0].height * 16 || map[ tmpY ][ tmpX ] == 1 ){
+      self.toRemove = true;
+    }
+
     for (var i in Player.list) {
       var p = Player.list[i];
       if (p.isShot(self)) {
-        self.toRemove = true;
         // 플레이어가맞음
+        self.toRemove = true;
       }
     }
   }
