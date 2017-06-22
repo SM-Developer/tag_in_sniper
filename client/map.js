@@ -4,7 +4,7 @@ function printMap( map, scr, img, context ){
 	var sj = Math.round( (scr.x+360) / 30 ) - 14;
 	for( i = si; i <= si + 16 + 4; i++ ){
 		if( i < 1 ) continue;
-		for( j = sj; j <= sj + 24 + 6; j++ ){
+		for( j = sj; j <= sj + 24 + 4; j++ ){
 			if( j < 1 ) continue;
 			
 			if( map[i][j] == 1 ){

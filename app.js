@@ -20,17 +20,14 @@ var MAP_WIDTH = 800;
 var MAP_HEIGHT = 600;
 var GRAVITY = 1;
 var PLAYER_RADIUS = 40;
-var PLAYER_SPEED = 10;
-
-//만드세요 맵
-var Map = [[]];
+var PLAYER_SPEED = 5;
 
 var Sniper = function() {
   var self = {
     x: Math.random() * MAP_WIDTH,
     y: Math.random() * MAP_HEIGHT,
     deltaX: 0,
-    ay: 0,
+    vy: 0,
     state: 'idle'
   }
 
@@ -39,7 +36,36 @@ var Sniper = function() {
     self.move();
   }
   self.gravity = function() {
-    // 뽕진이가 중력 만드세요
+    var fy = Math.floor( (self.y+24) / 30 );
+    /* 1의 속도로 중력 가속 */
+    if( self.vy < 20 ) self.vy += 1;
+    /* y위치에 속력을 더한다. */
+    self.y += self.vy;
+    
+    var x = Math.floor( (self.x+32) / 30 );
+    var lx = Math.floor( (self.x+20) / 30 );
+    var rx = Math.floor( (self.x+40) / 30 );
+    var y = Math.floor( (self.y-24) / 30 );
+    
+    /* 천장에 닿을 때 */
+    if( ( map[ y+1 ][ x ] == 1 || map[ y+1 ][ lx ] == 1 || map[ y+1 ][ rx ] == 1 ) && self.vy < 0 ){
+      self.y = y*30 + 48;
+      self.vy = 0;
+      return;
+    }
+    
+    y = Math.floor( (self.y+24) / 30 );
+    /* 바닥에 닿을 때 ( 바로 밑에 땅이 있다 && 떨어지고 있다 && 바닥을 통과하지 않았다 )*/
+    if( ( map[ y+1 ][ x ] != 0 || map[ y+1 ][ lx ] != 0 || map[ y+1 ][ rx ] != 0 ) && self.vy > 0 && self.y - self.vy <= y*30 - 24 ){
+      self.y = y*30 - 24;
+      self.vy = 0;
+      self.state = 'jump';
+    }
+    else{
+      if( self.state === 'jump' ){
+        self.state = 'idle';
+      }
+    }
   }
   self.move = function() {
     self.x += self.deltaX;
