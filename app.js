@@ -24,8 +24,8 @@ var PLAYER_SPEED = 5;
 
 var Sniper = function() {
   var self = {
-    x: Math.random() * MAP_WIDTH,
-    y: Math.random() * MAP_HEIGHT,
+    x: Math.random() * 2500 + 100,
+    y: Math.random() * 700 + 200,
     dir: 0, // 0 left 1 right
     deltaX: 0,
     vy: 0,
@@ -65,7 +65,7 @@ var Sniper = function() {
         self.state = 'idle';
       }
     }
-    else{
+    else if( self.state != 'die' ){
       self.state = 'jump';
     }
   }
@@ -229,7 +229,7 @@ var NPC = function(id) {
   var self = Sniper();
   self.id = id;
   self.timer = Math.random()*100 + 10;
-  self.action = Math.floor( Math.random()*3 ) + 1;
+  self.action = Math.floor( Math.random()*4 ) + 1;
 
   var superUpdate = self.update;
   self.update = function() {
@@ -251,11 +251,13 @@ var NPC = function(id) {
   }
 
   self.ai = function(){
+    self.pressLeft = self.pressRight = self.pressJump = false;
+
     self.timer--;
     if( self.timer <= 0 ){
-      self.pressLeft = self.pressRight = false;
+      self.state = 'idle';
       self.timer = Math.random()*100 + 10;
-      self.action = Math.floor( Math.random()*3 ) + 1;
+      self.action = Math.floor( Math.random()*4 ) + 1;
     }
 
     // 가만히 있기
@@ -264,11 +266,32 @@ var NPC = function(id) {
     // 왼쪽으로 걷기
     else if( self.action == 2 ){
       self.pressLeft = true;
+
+      if( Math.random()*2 < 1 ){
+        var tmpX = Math.floor( (self.x+32) / 30 );
+        var tmpY = Math.floor( (self.y+24) / 30 );
+        if( map[ tmpY+1 ][ tmpX-1 ] == 0 || map[ tmpY+1 ][ tmpX+1 ] == 0 ){
+          self.pressJump = true;
+        }
+      }
     }
     // 오른쪽으로 걷기
     else if( self.action == 3 ){
       self.pressRight = true;
+
+      if( Math.random()*2 < 1 ){
+        var tmpX = Math.floor( (self.x+32) / 30 );
+        var tmpY = Math.floor( (self.y+24) / 30 );
+        if( map[ tmpY+1 ][ tmpX-1 ] == 0 || map[ tmpY+1 ][ tmpX+1 ] == 0 ){
+          self.pressJump = true;
+        }
+      }
     }
+    // 조준
+    else if( self.action == 4 && self.state != 'jump' ){
+      self.state = 'snipe';
+    }
+    if( Math.random()*100 <= 1 && self.state != 'jump' && self.state != 'snipe' ) self.pressJump = true;
   }
 
   self.setSpeed = function() {
@@ -317,7 +340,7 @@ function spawnNPC(num) {
     var tmpNPC = NPC(i);
   }
 }
-spawnNPC(200);
+spawnNPC(50);
 
 var Bullet = function(angle) {
   var self = {
