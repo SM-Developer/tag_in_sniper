@@ -129,6 +129,7 @@ Player.onDisconnect = function(socket) {
 }
 
 Player.update = function() {
+  
   var pack = [];
   for (var i in Player.list) {
     var player = Player.list[i];
@@ -136,10 +137,12 @@ Player.update = function() {
     pack.push({
       x: player.x,
       y: player.y,
+      id: player.id,
       state: player.state,
     });
   }
   return pack;
+
 }
 
 var Bullet = function(angle) {
@@ -199,6 +202,12 @@ io.sockets.on('connection', function(socket) {
   socket.on('disconnect', function() {
     delete SOCKET_LIST[socket.id];
     Player.onDisconnect(socket);
+
+    for (var i in SOCKET_LIST) {
+      var tmpSocket = SOCKET_LIST[i];
+      tmpSocket.emit('delPerson', socket.id);
+    }
+
   });
 });
 

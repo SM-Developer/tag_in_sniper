@@ -19,30 +19,35 @@
     img.sniper = new Image();
     img.sniper.src = "./client/image/player.png";
 
-    var player = new Array();
+    Player.list = {};
 
     socket.on('newPosition', function(data) {
         // init player
+        console.log(Player.list);
+
         for( var i = 0; i < data.player.length; i++ ){
-            if( player[i] == null ){
-                player[i] = Player( data.player[i].x, data.player[i].y, data.player[i].state );
-            }
-            else{
-                player[i].x = data.player[i].x;
-                player[i].y = data.player[i].y;
-                player[i].state = data.player[i].state;
-            }
+            var tmpPlayer = 
+                Player( 
+                    data.player[i].x,
+                    data.player[i].y,
+                    data.player[i].state
+                );
+
+            Player.list[data.player[i].id] = tmpPlayer;   
         }
 
         // print canvas
         context.clearRect(0, 0, 800, 600);
 
-        for ( var i = 0; i < player.length; i++ ){
-            player[i].print( img, context );
+        for ( i in Player.list ){
+            Player.list[i].print( img, context );
         }
         
         //for (var i = 0; i < data.bullet.length; i++)
         //    context.fillRect(data.bullet[i].x - 5, data.bullet[i].y - 5, 10, 10);
+    });
+    socket.on('delPerson', function(data) {
+        delete Player.list[data];
     });
 
     document.onkeydown = function(event) {
