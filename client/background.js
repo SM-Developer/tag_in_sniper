@@ -28,6 +28,23 @@ var Background = function(){
         
         /* 건물 */
         context.drawImage( img.building, scr.x * ( 3720 / ( 30*(scr.width+1)*24 ) ), 0, 720, 480, 0, 300 - scr.y * 0.15, 720, 480 );
+
+
+        if (isGameEnd) {
+            context.font="30px Verdana";
+            if (isWin) {
+                // Create gradient
+                var gradient=context.createLinearGradient(0, 0, 720, 0);
+                gradient.addColorStop("0","magenta");
+                gradient.addColorStop("0.5","blue");
+                gradient.addColorStop("1.0","red");
+                // Fill with gradient
+                context.fillStyle=gradient;
+                context.fillText("You WIN!",10,90);
+            } else {
+                context.fillText("You LOSE!",10,90);
+            }
+        }
     }
 
     return self;
