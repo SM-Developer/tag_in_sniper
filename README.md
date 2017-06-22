@@ -4,6 +4,9 @@
 
 수많은 NPC들 사이에서 사람을 찾아 저격해라!
 
+브금출처 https://www.youtube.com/watch?v=CT8t_1JXWn8&list=RDQMDSkZYoybQIk
+(상업용으로 안쓸거라서 갖다 썻습니다!!)
+
 조작키 : 
 
 이동 방향키
