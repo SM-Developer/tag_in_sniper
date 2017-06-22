@@ -26,10 +26,7 @@
 
     var scr;
 
-    var map = new Array();
-    var dbmap = new Array();
-    initMap( dbmap );
-    makeMap( map, dbmap );
+    var map;
 
     Player.list = {};
     var socketId = 0;
@@ -61,7 +58,7 @@
         
     });
 
-    socket.on('setSockId', function(id, player) {
+    socket.on('initGame', function(id, player, tmpMap) {
         // init player
         socketId = id;
         console.log(player);
@@ -74,6 +71,8 @@
 
         Player.list[socketId] = tmpPlayer;
 
+        map = tmpMap;
+        console.log(map);
         scr = Screen( Player.list[socketId], map );
     });
 

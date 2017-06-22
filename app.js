@@ -7,6 +7,10 @@ app.get('/', function(req, res) {
 });
 app.use('/client', express.static(__dirname + '/client'));
 
+var map = new Array();
+require('./server/map.js').getMap(map);
+
+
 serv.listen(2000);
 console.log("port : 2000 open");
 
@@ -201,7 +205,7 @@ io.sockets.on('connection', function(socket) {
 
 
   Player.onConnect(socket);
-  socket.emit('setSockId', socket.id, Player.list[socket.id]);
+  socket.emit('initGame', socket.id, Player.list[socket.id], map);
 
   socket.on('disconnect', function() {
     delete SOCKET_LIST[socket.id];
