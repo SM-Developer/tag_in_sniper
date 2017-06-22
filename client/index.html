@@ -35,14 +35,23 @@
 
         // update player
         for( var i = 0; i < data.player.length; i++ ){
-            var tmpPlayer = 
-                Player( 
-                    data.player[i].x,
-                    data.player[i].y,
-                    data.player[i].state
-                );
+            if (Player.list[data.player[i].id] == null) {
+                var tmpPlayer = 
+                    Player( 
+                        data.player[i].x,
+                        data.player[i].y,
+                        data.player[i].dir,
+                        data.player[i].state
+                    );
+                Player.list[data.player[i].id] = tmpPlayer;
+            } else {
+                Player.list[data.player[i].id].x = data.player[i].x;
+                Player.list[data.player[i].id].y = data.player[i].y;
+                Player.list[data.player[i].id].dir = data.player[i].dir;
+                Player.list[data.player[i].id].state = data.player[i].state;
+            }
 
-            Player.list[data.player[i].id] = tmpPlayer;
+            Player.list[data.player[i].id].update();
         }
 
         scr.move( Player.list[socketId] );
@@ -61,18 +70,17 @@
     socket.on('initGame', function(id, player, tmpMap) {
         // init player
         socketId = id;
-        console.log(player);
         var tmpPlayer = 
             Player( 
                 player.x,
                 player.y,
+                player.dir,
                 player.state
             );
 
         Player.list[socketId] = tmpPlayer;
 
         map = tmpMap;
-        console.log(map);
         scr = Screen( Player.list[socketId], map );
     });
 
@@ -102,7 +110,7 @@
             socket.emit('keyPress', {inputId:'left', isPress: false});
         if(event.keyCode === 38)
             socket.emit('keyPress', {inputId:'up', isPress: false});
-        
+
         if(event.keyCode === 90)
             socket.emit('keyPress', {inputId:'jump', isPress: false});
 

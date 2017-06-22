@@ -26,6 +26,7 @@ var Sniper = function() {
   var self = {
     x: Math.random() * MAP_WIDTH,
     y: Math.random() * MAP_HEIGHT,
+    dir: 0, // 0 left 1 right
     deltaX: 0,
     vy: 0,
     state: 'idle'
@@ -112,13 +113,24 @@ var Player = function(id) {
   }
 
   self.setSpeed = function() {
-    if (self.pressRight) {
+    if( self.state != 'jump' ){
+      self.state = 'walk';
+    }
+
+    if( self.pressRight ){
+      self.dir = 1;
       self.deltaX = PLAYER_SPEED;
     }
-    else if (self.pressLeft)
+    else if( self.pressLeft ){
+      self.dir = 0;
       self.deltaX = -PLAYER_SPEED;
-    else
+    }
+    else{
       self.deltaX = 0;
+      if( self.state != 'jump' ){
+        self.state = 'idle';
+      }
+    }
   }
 
   self.shootBullet = function(angle) {
@@ -176,6 +188,7 @@ Player.update = function() {
       x: player.x,
       y: player.y,
       id: player.id,
+      dir: player.dir,
       state: player.state,
     });
   }
