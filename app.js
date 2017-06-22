@@ -70,6 +70,16 @@ var Sniper = function() {
   }
   self.move = function() {
     self.x += self.deltaX;
+
+    var tmpX = Math.floor( (self.x+16) / 30 );
+    var tmpY = Math.floor( (self.y+48) / 30 );
+    /* 벽에 닿을 때 */
+    if( map[ tmpY ][ tmpX ] == 1 || map[ tmpY - 1 ][ tmpX ] == 1 ){
+      self.x = tmpX*30 + 12;
+    }
+    if( map[ tmpY ][ tmpX + 1 ] == 1 || map[ tmpY - 1 ][ tmpX + 1 ] == 1 ){
+      self.x = tmpX*30 - 14;
+    }
   }
   self.isShot = function(bullet) {
     if (Math.sqrt(
