@@ -151,8 +151,8 @@ var Player = function(id) {
 
   self.shootBullet = function(angle) {
     var b = Bullet(angle);
-    b.x = self.x + (PLAYER_RADIUS + 10) * Math.cos(angle / 180 * Math.PI);
-    b.y = self.y + (PLAYER_RADIUS + 10) * Math.sin(angle / 180 * Math.PI);
+    b.x = self.x + (PLAYER_RADIUS) * Math.cos(angle / 180 * Math.PI);
+    b.y = self.y + (PLAYER_RADIUS) * Math.sin(angle / 180 * Math.PI);
   }
 
   Player.list[id] = self;
