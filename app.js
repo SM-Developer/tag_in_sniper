@@ -93,7 +93,7 @@ var Player = function(id) {
   self.pressUp = false;
   self.pressDown = false;
   self.pressJump = false;
-  self.pressAttack = false;
+  self.pressShoot = false;
 
   self.angle = 0;
 
@@ -108,9 +108,9 @@ var Player = function(id) {
       self.vy = -12;
     }
 
-    if(self.pressAttack) {
+    if(self.pressShoot) {
       self.shootBullet(self.angle);
-      self.pressAttack = false;
+      self.pressShoot = false;
     }
 
     superUpdate();
@@ -139,8 +139,8 @@ var Player = function(id) {
 
   self.shootBullet = function(angle) {
     var b = Bullet(angle);
-    b.x = self.x + (PLAYER_RADIUS + 10) * Math.cos(angle * 180 / Math.PI);
-    b.y = self.y + (PLAYER_RADIUS + 10) * Math.sin(angle * 180 / Math.PI);
+    b.x = self.x + (PLAYER_RADIUS + 10) * Math.cos(angle / 180 * Math.PI);
+    b.y = self.y + (PLAYER_RADIUS + 10) * Math.sin(angle / 180 * Math.PI);
   }
 
   Player.list[id] = self;
@@ -177,10 +177,15 @@ Player.onConnect = function(socket) {
       else{
         player.pressUp = player.pressDown = player.pressLeft = player.pressRight = false;
         player.state = 'idle';
+        player.pressShoot = true;
+        player.angle = data.angle;
       }
     }
-    else if (data.inputId === 'attack') {
-      player.pressAttack = data.isPress;
+    else if (data.inputId === 'cancel') {
+      if( player.state == 'snipe' ){
+        player.pressUp = player.pressDown = player.pressLeft = player.pressRight = false;
+        player.state = 'idle';
+      }
     }
   });
 }
@@ -210,14 +215,14 @@ Player.update = function() {
 var Bullet = function(angle) {
   var self = {
       id: Math.random(),
-      spdX: Math.cos(angle/180*Math.PI) * 10,
-      spdY: Math.sin(angle/180*Math.PI) * 10,
+      spdX: Math.cos(angle/180*Math.PI) * 20,
+      spdY: Math.sin(angle/180*Math.PI) * 20,
       timer: 0,
       toRemove: false,
   }
 
   self.update = function() {
-    if (self.timer++ > 100) {
+    if (self.timer++ > 30) {
       self.toRemove = true;
     }
 

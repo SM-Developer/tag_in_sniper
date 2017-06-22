@@ -10,6 +10,7 @@
 <script type = "text/javascript" src = "./client/player.js"></script>
 <script type = "text/javascript" src = "./client/bullet.js"></script>
 <script type = "text/javascript" src = "./client/map.js"></script>
+<script type = "text/javascript" src = "./client/background.js"></script>
 <script type = "text/javascript" src = "./client/screen.js"></script>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -20,6 +21,10 @@
 
     var img = new Object();
 
+    img.moon = new Image();
+    img.moon.src = "./client/image/moon.png";
+    img.building = new Image();
+    img.building.src = "./client/image/building.png";
     img.tile = new Image();
     img.tile.src = "./client/image/tile.png";
     img.sniper = new Image();
@@ -31,7 +36,7 @@
     key.up = key.down = key.left = key.right = key.z = false;
 
     var scr;
-
+    var background = Background();
     var map;
 
     Player.list = {};
@@ -69,6 +74,8 @@
 
         // print canvasx
         context.clearRect(0, 0, 720, 480);
+
+        background.print( scr, img, context );
 
         printMap( map, scr, img, context );
 
@@ -115,7 +122,6 @@
         if(Player.list[socketId].state != 'snipe') {
             if(event.keyCode === 39){
                 socket.emit('keyPress', {inputId:'right', isPress: true});
-                socket.emit('keyPress', {inputId:'attack', isPress: true});
                 key.right = true;
             }
             if(event.keyCode === 40){
@@ -152,8 +158,15 @@
                 key.right = true;
 
             if(event.keyCode === 88 && !key.z ){
-                socket.emit('keyPress', {inputId:'shoot'});
+                var p = Player.list[socketId];
+                var tmpAngle = Math.atan2(
+                    p.sniping.y - p.y,
+                    p.sniping.x - p.x);
+                socket.emit('keyPress', {inputId:'shoot', angle: tmpAngle/ Math.PI * 180});
                 key.z = true;
+            }
+            if( event.keyCode === 67 ){
+                socket.emit('keyPress', {inputId:'cancel'});
             }
         }
     }
@@ -177,10 +190,12 @@
                 key.up = false;
             }
 
-            if(event.keyCode === 90)
+            if( event.keyCode === 90 ){
                 socket.emit('keyPress', {inputId:'jump', isPress: false});
-            if( event.keyCode === 88 )
+            }
+            if( event.keyCode === 88 ){
                 key.z = false;
+            }
         }
         else{
             if(event.keyCode === 38)
