@@ -8,6 +8,8 @@
 
 <script type = "text/javascript" src = "./client/sniper.js"></script>
 <script type = "text/javascript" src = "./client/player.js"></script>
+<script type = "text/javascript" src = "./client/map.js"></script>
+<script type = "text/javascript" src = "./client/screen.js"></script>
 
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script>
@@ -16,15 +18,25 @@
     var socket = io();
 
     var img = new Object();
+
+    img.tile = new Image();
+    img.tile.src = "./client/image/tile.png";
     img.sniper = new Image();
     img.sniper.src = "./client/image/player.png";
 
+    var scr;
+
+    var map = new Array();
+    var dbmap = new Array();
+    initMap( dbmap );
+    makeMap( map, dbmap );
+
     Player.list = {};
+    var socketId = 0;
 
     socket.on('newPosition', function(data) {
-        // init player
-        console.log(Player.list);
 
+        // update player
         for( var i = 0; i < data.player.length; i++ ){
             var tmpPlayer = 
                 Player( 
@@ -33,41 +45,60 @@
                     data.player[i].state
                 );
 
-            Player.list[data.player[i].id] = tmpPlayer;   
+            Player.list[data.player[i].id] = tmpPlayer;
         }
+
+        scr.move( Player.list[socketId] );
 
         // print canvas
         context.clearRect(0, 0, 800, 600);
 
+        printMap( map, scr, img, context );
+
         for ( i in Player.list ){
-            Player.list[i].print( img, context );
+            Player.list[i].print( scr, img, context );
         }
         
-        //for (var i = 0; i < data.bullet.length; i++)
-        //    context.fillRect(data.bullet[i].x - 5, data.bullet[i].y - 5, 10, 10);
     });
+
+    socket.on('setSockId', function(id, player) {
+        // init player
+        socketId = id;
+        console.log(player);
+        var tmpPlayer = 
+            Player( 
+                player.x,
+                player.y,
+                player.state
+            );
+
+        Player.list[socketId] = tmpPlayer;
+
+        scr = Screen( Player.list[socketId], map );
+    });
+
     socket.on('delPerson', function(data) {
         delete Player.list[data];
     });
 
     document.onkeydown = function(event) {
-        if(event.keyCode === 68)
+        if(event.keyCode === 39)
             socket.emit('keyPress', {inputId:'right', isPress: true, state: 'walk'});
-        if(event.keyCode === 83)
+        if(event.keyCode === 40)
             socket.emit('keyPress', {inputId:'down', isPress: true, state: 'walk'});
-        if(event.keyCode === 65)
+        if(event.keyCode === 37)
             socket.emit('keyPress', {inputId:'left', isPress: true, state: 'walk'});
-        if(event.keyCode === 87)
+        if(event.keyCode === 38)
             socket.emit('keyPress', {inputId:'up', isPress: true, state: 'walk'});
     }
     document.onkeyup = function(event) {
-        if(event.keyCode === 68)
+        if(event.keyCode === 39)
             socket.emit('keyPress', {inputId:'right', isPress: false, state: 'idle'});
-        if(event.keyCode === 83)
+        if(event.keyCode === 40)
             socket.emit('keyPress', {inputId:'down', isPress: false, state: 'idle'});
-        if(event.keyCode === 65)
+        if(event.keyCode === 37)
             socket.emit('keyPress', {inputId:'left', isPress: false, state: 'idle'});
-        if(event.keyCode === 87)
+        if(event.keyCode === 38)
             socket.emit('keyPress', {inputId:'up', isPress: false, state: 'idle'});
         if(event.keyCode === 90) {
             var angle = 0; //Math.atan2(y,x) / Math.PI * 180;

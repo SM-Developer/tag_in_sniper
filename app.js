@@ -198,7 +198,11 @@ var io = require('socket.io')(serv, {});
 io.sockets.on('connection', function(socket) {
   socket.id = Math.random();
   SOCKET_LIST[socket.id] = socket;
+
+
   Player.onConnect(socket);
+  socket.emit('setSockId', socket.id, Player.list[socket.id]);
+
   socket.on('disconnect', function() {
     delete SOCKET_LIST[socket.id];
     Player.onDisconnect(socket);
