@@ -59,12 +59,12 @@ var Sniper = function() {
     if( ( map[ y+1 ][ x ] != 0 || map[ y+1 ][ lx ] != 0 || map[ y+1 ][ rx ] != 0 ) && self.vy > 0 && self.y - self.vy <= y*30 - 24 ){
       self.y = y*30 - 24;
       self.vy = 0;
-      self.state = 'jump';
-    }
-    else{
       if( self.state === 'jump' ){
         self.state = 'idle';
       }
+    }
+    else{
+      self.state = 'jump';
     }
   }
   self.move = function() {
@@ -91,19 +91,26 @@ var Player = function(id) {
   self.pressLeft = false;
   self.pressUp = false;
   self.pressDown = false;
-  self.pressAttack = false
+  self.pressJump = false;
+  self.pressAttack = false;
 
   self.angle = 0;
 
   var superUpdate = self.update;
   self.update = function() {
     self.setSpeed();
-    superUpdate();
+
+    if( self.pressJump && self.state != 'jump' ){
+      self.vy = -12;
+    }
 
     if(self.pressAttack) {
       self.shootBullet(self.angle);
     }
+
+    superUpdate();
   }
+
   self.setSpeed = function() {
     if (self.pressRight) {
       self.deltaX = PLAYER_SPEED;
@@ -133,20 +140,21 @@ Player.onConnect = function(socket) {
   socket.on('keyPress', function(data) {
     if (data.inputId === 'right') {
       player.pressRight = data.isPress;
-      player.state = data.state;
     }
     else if (data.inputId === 'left') {
       player.pressLeft = data.isPress;
-      player.state = data.state;
     }
     else if (data.inputId === 'up') {
       player.pressUp = data.isPress;
-      player.state = data.state;
     }
     else if (data.inputId === 'down') {
       player.pressDown = data.isPress;
-      player.state = data.state;
     }
+    else if (data.inputId === 'jump') {
+      player.pressJump = data.isPress;
+    }
+
+
     else if (data.inputId === 'shoot') {
       player.state = 'idle';
       player.angle = data.angle;
@@ -256,4 +264,4 @@ setInterval(function() {
     socket.emit('newPosition', pack);
   }
 
-}, 1000/25);
+}, 1000/33);
