@@ -111,6 +111,7 @@ var Player = function(id) {
 
   var superUpdate = self.update;
   self.update = function() {
+    if (self.state == 'die') return;
     if( self.state != 'snipe' ){
       self.setSpeed();
     }
@@ -164,7 +165,6 @@ Player.list = {};
 
 Player.onConnect = function(socket) {
   var player = Player(socket.id);
-
   socket.on('keyPress', function(data) {
     if (data.inputId === 'right') {
       player.pressRight = data.isPress;

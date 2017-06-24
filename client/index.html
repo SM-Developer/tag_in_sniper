@@ -55,7 +55,6 @@
     var socketId = 0;
 
     socket.on('newPosition', function(data) {
-        
         // update player
         for( var i = 0; i < data.player.length; i++ ){
             if (Player.list[data.player[i].id] == null) {
@@ -164,7 +163,6 @@
 
 
     document.onkeydown = function(event) {
-        console.log(Player.list[socketId].state);
         if (Player.list[socketId].state == 'die') return;
         if (Player.list[socketId].state != 'snipe') {
             if(event.keyCode === 39){
